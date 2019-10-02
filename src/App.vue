@@ -1,18 +1,42 @@
 <template>
 <div id="app">
-  <v-app id="asdf111">
+  <v-app>
+     <v-navigation-drawer v-model="drawer" absolute temporary >
+      <v-list>
+        <v-list-tile>
+          <v-list-tile-content>
+              <v-list-title-title>
+                Menu
+              </v-list-title-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider></v-divider>
+
+        <template v-for="(item, index) in items">
+          <v-list-tile :key="index" :href="item.href">
+            <v-list-tile-action>
+              <v-icon light v-html="item.icon"></v-icon>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-list-title-title light v-html="item.title"></v-list-title-title>
+            </v-list-tile-action>
+          </v-list-tile>
+
+        </template>
+      </v-list>
+    </v-navigation-drawer>
     <div>
       <v-toolbar dark>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>ShoppingCart</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
         <v-toolbar-items>
-          <v-btn flat>
+          <v-btn text>
             Products
           </v-btn>
-          <v-btn flat>
+          <v-btn text>
             <v-badge left color="green">
               <span slot="badge">$</span>
               <v-icon>shopping_cart</v-icon> Basket
@@ -26,7 +50,7 @@
     </v-content>
 
     <v-footer dark padless>
-      <v-card flat tile class="indigo lighten-1 white--text text-center flex">
+      <v-card text tile class="indigo lighten-1 white--text text-center flex">
         <v-card-text>
           <v-btn v-for="icon in icons" :key="icon" class="mx-3 white--text" dark icon>
             <v-icon size="24px">{{icon}}</v-icon>
@@ -57,14 +81,19 @@ export default {
 
   },
   data: () => ({
+    drawer: false,
     icons: [
       'fab fa-facebook',
       'fab fa-twitter',
       'fab fa-google-plus',
       'fab fa-linkedin',
       'fab fa-instagram'
-    ]
-    
+    ],
+    items:[{
+      icon: 'perm_identity',
+      herf: '#',
+      title: 'Account'
+    }]
   }),
 };
 </script>
