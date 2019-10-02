@@ -24,28 +24,34 @@
         </v-list>
       </v-card>
     </v-navigation-drawer>
-    <div>
-      <v-toolbar app dark>
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>ShoppingCart</v-toolbar-title>
 
-        <v-spacer></v-spacer>
 
-        <v-toolbar-items>
-          <v-btn text>
-            Products
-          </v-btn>
-          <v-btn text>
-            <v-badge left color="green">
-              <span slot="badge">$</span>
-              <v-icon>shopping_cart</v-icon> Basket
-            </v-badge>
-          </v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
-    </div>
+
+
+
+    <v-app-bar flat app dark>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>ShoppingCart</v-toolbar-title>
+
+       <v-spacer></v-spacer>
+
+      <v-toolbar-items>
+        <v-btn text>
+          Products
+        </v-btn>
+        <v-btn text>
+          <v-badge left color="green">
+            <span slot="badge">$</span>
+            <v-icon>shopping_cart</v-icon> Basket
+          </v-badge>
+        </v-btn>
+      </v-toolbar-items>
+    </v-app-bar>
+    
     <v-content>
-      
+      <router-view>
+
+      </router-view>
     </v-content>
 
     <v-footer dark padless>
@@ -91,6 +97,76 @@ export default {
     ],
     items:[
       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜1'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅1'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜2'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅2'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+       {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+       {
         avatar: require('@/assets/img/vegetable.jpg'),
         herf: '#',
         title: '蔬菜'
