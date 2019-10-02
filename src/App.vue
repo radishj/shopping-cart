@@ -1,32 +1,31 @@
 <template>
 <div id="app">
   <v-app>
-     <v-navigation-drawer v-model="drawer" absolute temporary >
-      <v-list>
-        <v-list-tile>
-          <v-list-tile-content>
-              <v-list-title-title>
-                Menu
-              </v-list-title-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-divider></v-divider>
-
-        <template v-for="(item, index) in items">
-          <v-list-tile :key="index" :href="item.href">
-            <v-list-tile-action>
-              <v-icon light v-html="item.icon"></v-icon>
-            </v-list-tile-action>
-            <v-list-tile-action>
-              <v-list-title-title light v-html="item.title"></v-list-title-title>
-            </v-list-tile-action>
-          </v-list-tile>
-
-        </template>
-      </v-list>
+     <v-navigation-drawer v-model="drawer" absolute temporary class="mx-auto">
+      <v-card
+        class="mx-auto"
+        max-width="300"
+        tile
+      >
+        <v-list shaped>
+          <v-subheader class="font-weight-bold">选择分类</v-subheader>
+            <v-list-item
+              v-for="item in items"
+              :key="item.title"
+              @click="updateSelected(item)"
+            >
+              <v-list-item-avatar>
+                <v-img :src="item.avatar"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+              </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card>
     </v-navigation-drawer>
     <div>
-      <v-toolbar dark>
+      <v-toolbar app dark>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>ShoppingCart</v-toolbar-title>
 
@@ -58,13 +57,13 @@
         </v-card-text>
 
         <v-card-text>
-          shopping card footer text here.
+          君知易购团购车
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-text class="white--text text-center">
-          &copy;2019 - <strong>ShoppingCard</strong>
+          &copy;2016 - <strong>Imprint Culture & Media Inc.</strong>
         </v-card-text>
       </v-card>
 
@@ -82,6 +81,7 @@ export default {
   },
   data: () => ({
     drawer: false,
+    selectedItem: {},
     icons: [
       'fab fa-facebook',
       'fab fa-twitter',
@@ -89,11 +89,29 @@ export default {
       'fab fa-linkedin',
       'fab fa-instagram'
     ],
-    items:[{
-      icon: 'perm_identity',
-      herf: '#',
-      title: 'Account'
-    }]
+    items:[
+      {
+        avatar: require('@/assets/img/vegetable.jpg'),
+        herf: '#',
+        title: '蔬菜'
+      },
+      {
+        avatar: require('@/assets/img/hotpot.jpg'),
+        herf: '#',
+        title: '火锅'
+      },
+    ]
   }),
+   methods: {
+    
+    /**
+    * update state to maintain selected item
+    * and toggle view
+    */
+    updateSelected (item) {
+        this.selectedItem = item;
+        alert(item.title);
+     }
+   }
 };
 </script>
