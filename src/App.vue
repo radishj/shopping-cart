@@ -25,13 +25,9 @@
       </v-card>
     </v-navigation-drawer>
 
-
-
-
-
     <v-app-bar flat app dark>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>ShoppingCart</v-toolbar-title>
+      <v-toolbar-title>君知团购市场</v-toolbar-title>
 
        <v-spacer></v-spacer>
 
@@ -41,7 +37,7 @@
         </v-btn>
         <v-btn text>
           <v-badge left color="green">
-            <span slot="badge">$</span>
+            <span slot="badge">5</span>
             <v-icon>shopping_cart</v-icon> Basket
           </v-badge>
         </v-btn>
