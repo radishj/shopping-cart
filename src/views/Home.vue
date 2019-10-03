@@ -18,7 +18,7 @@
                     ></v-img>
                     
                     <v-card-text class="pa-0 ma-0" style="position:relative;top:-25px;right:-10px;">
-                        <v-btn absolute color="deep-orange lighten-2" class="shite--text" fab medium right top>
+                        <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
                     </v-card-text>
@@ -65,7 +65,7 @@
                     ></v-img>
                     
                     <v-card-text class="pa-0 ma-0" style="position:relative;top:-25px;right:-10px;">
-                        <v-btn absolute color="deep-orange lighten-2" class="shite--text" fab medium right top>
+                        <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
                     </v-card-text>
