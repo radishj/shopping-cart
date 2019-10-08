@@ -17,7 +17,7 @@
                     height="200px"
                     ></v-img>
                     
-                    <v-card-text class="pa-0 ma-0" style="position:relative;top:-25px;right:-10px;">
+                    <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
                         <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
@@ -34,14 +34,14 @@
 
                         <v-btn
                             icon
-                            @click="show1 = !show1"
+                            @click="show = !show"
                         >
-                            <v-icon>{{ show1 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                            <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                         </v-btn>
                     </v-card-actions>
 
                     <v-expand-transition>
-                    <div v-show="show1">
+                    <div v-show="show">
                         <v-card-text>
                             {{products[0].detail}}
                         </v-card-text>
@@ -64,7 +64,7 @@
                     height="200px"
                     ></v-img>
                     
-                    <v-card-text class="pa-0 ma-0" style="position:relative;top:-25px;right:-10px;">
+                    <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
                         <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
@@ -103,6 +103,13 @@
 </template>
 
 <script>
+navigator.usb.getDevices().then(devices => {
+    devices.map(device => {
+      alert(device.productName);      // "Arduino Micro"
+      alert(device.manufacturerName); // "Arduino LLC"
+    });
+  })
+
 export default{
     data: () =>({
         show: false,
