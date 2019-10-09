@@ -74,9 +74,9 @@ export default {
     },
     methods: { 
       getCats () {
-      axios.get('/fresh/productTypes').then(
+      axios.get('http://localhost:3000/fresh/productTypes').then(
         result => {
-            //alert(result.data) 
+            alert(result.data) 
             this.categories = result.data
         },
         error => {
