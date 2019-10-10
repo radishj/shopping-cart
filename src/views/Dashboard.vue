@@ -2,11 +2,11 @@
     <div>
     <div class="dashboard"  v-if="curPage==='dash'">
     <v-list-item>
-        <v-list-item-avatar @click="drawer = !drawer;" >
-            <v-icon>mdi-sitemap</v-icon>
+        <v-list-item-avatar @click="drawer = !drawer;" class="mr-2">
+            <v-icon large>mdi-sitemap</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
-            <v-list-item-title><h2>>> {{catSelected}}</h2></v-list-item-title>
+            <v-list-item-title><span class="display-1">-></span><span class="ml-3 display-1">{{catSelected}}</span></v-list-item-title>
         </v-list-item-content>
     </v-list-item>
     <v-navigation-drawer v-model="drawer" fixed temporary class="mx-auto">
@@ -45,49 +45,9 @@
 
     <v-container class="my-5">
         <v-row class="mb-6" no-gutters>
-            <v-col cols="6" sm="4" md="3" lg="2">
-                <v-card class="ma-1">
-                    <v-img
-                    :src = "products[0].img"
-                    height="200px"
-                    ></v-img>
-                    
-                    <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
-                        <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
-                            <v-icon>shopping_cart</v-icon>
-                        </v-btn>
-                    </v-card-text>
-                    <v-card-title  class="pa-0 pl-1">
-                        {{products[0].name}}
-                    </v-card-title>
-                    
-                    <v-card-actions class="pa-0 pl-2">
-                        <v-card-text class="grey--text subtitle-1 pa-0 pl-1">
-                                ${{products[0].price}}/{{products[0].unit}} x {{products[0].qty}}{{products[0].unit}}, {{products[0].info}}
-                        </v-card-text>
-                        <div class="flex-grow-1"></div>
-
-                        <v-btn
-                            icon
-                            @click="show = !show"
-                        >
-                            <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-                        </v-btn>
-                    </v-card-actions>
-
-                    <v-expand-transition>
-                    <div v-show="show">
-                        <v-card-text>
-                            {{products[0].detail}}
-                        </v-card-text>
-                    </div>
-                    </v-expand-transition>
-                    
-                </v-card>
-            </v-col>
             <v-col
-                v-for="k in 12"
-                :key="k"
+                v-for="product in theProducts"
+                :key= product.ID
                 :cols="6"
                 :sm="4"
                 :md="3"
@@ -95,7 +55,7 @@
             >
                 <v-card class="ma-1">
                     <v-img
-                    :src = "products[1].img"
+                    :src = "`https://mediavictoria.com/image/Processed/System/GroupSale/${product.Folder}/${product.ImageFileName}`"
                     height="200px"
                     ></v-img>
                     
@@ -105,27 +65,27 @@
                         </v-btn>
                     </v-card-text>
                     <v-card-title  class="pa-0 pl-1">
-                        {{products[1].name}}
+                        {{product.Name}}
                     </v-card-title>
                     
                     <v-card-actions class="pa-0 pl-2">
                         <v-card-text class="grey--text subtitle-1 pa-0 pl-1">
-                                ${{products[1].price}}/{{products[1].unit}} x {{products[1].qty}}{{products[1].unit}}, {{products[1].info}}
+                                ${{product.UnitPrice}}/{{product.WUnitType}} x {{product.Unit}}{{product.WUnitType}}
                         </v-card-text>
                         <div class="flex-grow-1"></div>
 
                         <v-btn
                             icon
-                            @click="show1 = !show1"
+                            @click="product.show = !product.show"
                         >
-                            <v-icon>{{ show1 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                            <v-icon>{{ product.show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                         </v-btn>
                     </v-card-actions>
 
                     <v-expand-transition>
                     <div v-show="show1">
                         <v-card-text>
-                            {{products[1].detail}}
+                            {{product.Info}}
                         </v-card-text>
                     </div>
                     </v-expand-transition>
@@ -181,55 +141,35 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
-import {mapMutations} from 'vuex';
+import {mapGetters, mapMutations, mapActions} from 'vuex';
 export default{
     data: () =>({
         drawer: false,
         catSelected: 'select',
         show: false,
-        show1: false,
-        products: [
-            {
-                id: 0,
-                price: 8.89,
-                img: require('@/assets/products/35.jpg'),
-                name1: "普通羊肉片",
-                qty: 2,
-                unit: "磅",
-                info: "180克",
-                detail: "适合爆炒或切小后火锅"
-            },
-            {
-                id: 1,
-                price: 0.89,
-                img: require('@/assets/products/DABAICAI.jpg'),
-                name1: "大白菜(邵菜)",
-                qty: 2,
-                unit: "磅",
-                info: "",
-                detail: "华人最爱 - 炒菜,涮锅,煲汤,万能菜"
-            }
-        ]
     }),
     computed:{
-        ...mapGetters(['cats', 'curPage'])
+        ...mapGetters(['cats', 'theProducts', 'curPage']),
     },
     methods:{
+        ...mapMutations(['getProductTypeData', 'getProductData', 'getProductsInCat']),
+        ...mapActions(['getProductData','getProductsInCat']),
         updateSelected(cat)
-        {
+        {//alert(Object.keys(state));
             this.catSelected = cat.Name;
+            this.getProductsInCat(cat.ID);
             this.drawer = false;
         },
         getPage()
         {
-            alert(this.curPage);
+            //alert(this.curPage);
             return this.curPage=='dash';
         },
-        ...mapMutations(['getCats'])
     },
-    mounted(){
-        this.getCats();
+    async mounted(){
+        this.getProductTypeData();
+        await this.$store.dispatch('getProductData', 0);
+        //await this.$store.dispatch('getProductsInCat',0);
     },
 }
 </script>
