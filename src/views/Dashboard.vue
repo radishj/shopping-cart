@@ -1,6 +1,6 @@
 <template>
     <div>
-    <div class="dashboard"  v-if="curPage==='dash'">
+    <div class="dashboard"  v-if="curPage==='productPick'">
     <v-list-item>
         <v-list-item-avatar @click="drawer = !drawer;" class="mr-2">
             <v-icon large>mdi-sitemap</v-icon>
@@ -56,15 +56,16 @@
                 <v-card class="ma-1">
                     <v-img
                     :src = "`https://mediavictoria.com/image/Processed/System/GroupSale/${product.Folder}/${product.ImageFileName}`"
-                    height="200px"
+                    height="150px"
+                    width="200px"
                     ></v-img>
                     
                     <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
-                        <v-btn absolute color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
+                        <v-btn absolute @click="selectP(product)" color="indigo lighten-2 white--text" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
                     </v-card-text>
-                    <v-card-title  class="pa-0 pl-1">
+                    <v-card-title  class="pa-0 pl-1 title">
                         {{product.Name}}
                     </v-card-title>
                     
@@ -83,7 +84,7 @@
                     </v-card-actions>
 
                     <v-expand-transition>
-                    <div v-show="show1">
+                    <div v-show="product.show">
                         <v-card-text>
                             {{product.Info}}
                         </v-card-text>
@@ -95,65 +96,148 @@
         </v-row>
     </v-container>
     </div>
+
     <div class="basket"  v-if="curPage==='basket'">
         <v-container>
-        <h2 class="display-2 mb-4">Basket</h2>
-
-        <v-list>
-            <template v-for="(product, index) in products">
-                <v-list-item :key="product.id" avatar>
-                    <v-list-item-avatar>
-                        <img :src="product.img">
-                    </v-list-item-avatar>
-
-                    <v-list-item>
-                        {{product.name1}}
-                    </v-list-item>
-
-                    <v-list-item>
-                        {{product.price}}$
-                    </v-list-item>
-
-                    <v-list-item-action>
-                        <v-text-field label="Quantity" reverse v-model="product.qty"></v-text-field>
-                    </v-list-item-action>
-
-                    <v-list-item>
-                        {{product.price * product.qty}}$
-                    </v-list-item>
-
-                    <v-list-item-action>
+            <span></span><h2 class="title mb-4"><v-icon size=40>shopping_cart</v-icon>  已选商品 :</h2>
+            <div>
+            <v-container>
+                <v-row v-for="product in selectedProducts"
+                        :key= product.ID
+                        no-gutters
+                        >
+                    <v-col cols="2">
+                        <v-img
+                            :src = "`https://mediavictoria.com/image/Processed/System/GroupSale/${product.Folder}/${product.ImageFileName}`"
+                            height="60px"
+                            width="80px"
+                        ></v-img>
+                    </v-col>
+                    <v-col cols="2" class="mt-4">
+                        <b>{{product.Name}}</b>
+                    </v-col>
+                    <v-col cols="2" class="mt-4 text-right">
+                        ${{product.UnitPrice}}/{{product.unittypeName}}
+                    </v-col>
+                    <v-col cols="1">
+                        <v-text-field reverse=true label="份量" class="pl-4" v-model="product.Unit" readonly=true></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-text-field reverse=true label="份数" class="pl-4" v-model="product.qty"></v-text-field>
+                    </v-col>
+                    <v-col cols="2" class="mt-4 text-right">
+                        <div v-if="product.TAX == 0">
+                            <span>${{parseFloat(product.UnitPrice * product.Unit * product.qty).toFixed(2)}}</span>
+                        </div>
+                        <div v-else><v-badge left color="teal">
+                            <span slot="badge">{{TaxString(product.TAX)}}</span>
+                            <span>${{parseFloat(product.UnitPrice * product.Unit * product.qty).toFixed(2)}}</span>
+                        </v-badge></div>
+                    </v-col>
+                    <v-col cols="1" class="text-center">
                         <v-btn icon ripple>
                             <v-icon color="red lighten-1">delete</v-icon>
                         </v-btn>
-                    </v-list-item-action>
-                </v-list-item>
-                <v-divider v-if="index + 1 < products.length" :key="index"></v-divider>
-            </template>
-        </v-list>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-spacer></v-spacer>
+                    <v-col cols="2" class="mt-4 text-right">
+                        Tax: ${{getSProductsTaxTotal()}}
+                    </v-col>
+                    <v-col cols="1" class="text-center">
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-spacer></v-spacer>
+                    <v-col cols="2" class="mt-4 text-right">
+                        Total: ${{getSProductsTotal()}}
+                    </v-col>
+                    <v-col cols="1" class="text-center">
+                    </v-col>
+                </v-row>
+            </v-container>
+            </div>
 
-        <v-container>
-            <v-btn color="success" larger style="float: right;">Go to payment</v-btn>
+            <v-container class="grey lighten-5">
+                <v-row>
+                <v-col>
+                    <v-card
+                    left
+                    tile
+                    >
+                        <v-btn color="success" @click="setPage('productPick')" larger min-width="150" style="float: left;">&lt;&lt; 继续挑选</v-btn>
+                    </v-card>
+                </v-col>
+
+                <v-spacer></v-spacer>
+
+                <v-col>
+                    <v-card
+                    tile
+                    >
+                    <v-btn color="success" larger min-width="150" style="float: right;">我要下单 &gt;&gt;</v-btn>
+                    </v-card>
+                </v-col>
+                </v-row>
+            </v-container>
         </v-container>
-    </v-container>
     </div>
     </div>
 </template>
 
 <script>
+//import Vue from 'vue'
 import {mapGetters, mapMutations, mapActions} from 'vuex';
 export default{
-    data: () =>({
+    data: () => ({
         drawer: false,
         catSelected: 'select',
         show: false,
+        selectedProducts: [],
+        totalTax:0,
+        total:0
     }),
     computed:{
-        ...mapGetters(['cats', 'theProducts', 'curPage']),
+        ...mapGetters(['cats', 'theProducts', 'curPage', 'getCatName', 'scbNo']),
     },
     methods:{
-        ...mapMutations(['getProductTypeData', 'getProductData', 'getProductsInCat']),
+        ...mapMutations(['getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne', 'setPage']),
         ...mapActions(['getProductData','getProductsInCat']),
+        TaxString(tax)
+        {
+            if(tax==0)
+                return false;
+            else if(tax==1)
+            {
+                return "T1"
+            }
+            else if(tax==3)
+            {
+                return "T2"
+            }
+        },
+        getSProductsTotal()
+        {
+            var total=0;
+            this.selectedProducts.forEach(e => {
+                total += e.UnitPrice * e.Unit * e.qty;
+            })
+            total += this.totalTax;
+            return parseFloat(total).toFixed(2);
+        },
+        getSProductsTaxTotal()
+        {
+            var taxTotal=0;
+            const PST = 0.07;
+            const GST = 0.05;
+            this.selectedProducts.forEach(e => {//alert('aa:'+e.tax+';' +e.TAX&2/2+';'+e.TAX&1);
+                var tax = (e.TAX&2)/2*PST + (e.TAX&1)*GST;//alert(tax);
+                taxTotal += e.UnitPrice * tax * e.Unit * e.qty;
+            })
+            this.totalTax = parseFloat(taxTotal).toFixed(2);
+            return this.totalTax;
+        },
         updateSelected(cat)
         {//alert(Object.keys(state));
             this.catSelected = cat.Name;
@@ -165,11 +249,35 @@ export default{
             //alert(this.curPage);
             return this.curPage=='dash';
         },
+        selectP(product)
+        {
+            //product.qty = 1;
+            var newP = {
+                ...product,
+                qty: 1
+            };
+            let exists = false;
+            this.selectedProducts.forEach(function(e) {
+                if(e.PID == product.PID)
+                {
+                    exists = true;
+                    return false;
+                }
+            })
+            if(!exists){
+                this.selectedProducts.push(newP);
+                this.ScbNoAddOne();
+            }
+            //$set(product, 'qty', 2);
+            //Vue.set(this.selectedProducts,this.selectedProducts.length-1,copyProduct);
+        }
     },
     async mounted(){
-        this.getProductTypeData();
+        //this.getProductTypeData();
+        await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);
-        //await this.$store.dispatch('getProductsInCat',0);
+        this.catSelected = this.getCatName(0);
+        //await this.$store.dispatch('getProductsInCat',0); 
     },
 }
 </script>
@@ -183,4 +291,7 @@ export default{
         position: absolute;
         width: 100%;
 }
+/*.bottom-line{
+    border-bottom: 1px dotted grey;
+}*/
 </style>

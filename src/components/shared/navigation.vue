@@ -12,7 +12,7 @@
         </v-btn>
         <v-btn @click="setPage('basket')" text>
           <v-badge left color="green">
-            <span slot="badge">5</span>
+            <span slot="badge">{{scbNo}}</span>
             <v-icon>shopping_cart</v-icon> Basket
           </v-badge>
         </v-btn>
@@ -35,7 +35,7 @@
     }),
     computed:
     {
-        ...mapGetters(['cats'])
+        ...mapGetters(['cats','scbNo'])
     },
     methods: { 
       /**
