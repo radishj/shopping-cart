@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar flat app dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon ></v-app-bar-nav-icon>
       <v-toolbar-title>君知团购市场</v-toolbar-title>
 
        <v-spacer></v-spacer>

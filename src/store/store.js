@@ -7,25 +7,33 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state:{
+        page:'productPick',
         categories: [],
         allProducts: [],
         products: [],
         unitTypes: [],
-        page:'productPick',
-        shoppingCartBadge:0
+        cities: [],
+        shoppingCartBadge:0,
+        customer:{}
     },
     getters:{
+        page: state => {
+            return state.page;
+        },
+        customer: state => {
+            return state.customer;
+        },
         cats: state => {
             return state.categories;
+        },
+        cities: state => {
+            return state.cities;
         },
         getCatName: state => id => {
             return state.categories[id].Name;
         },
         getUnitTypeName: state => id => {
             return state.unitTypes[id].Name;
-        },
-        curPage: state => {
-            return state.page;
         },
         scbNo: state => {
             return state.shoppingCartBadge;
@@ -42,6 +50,18 @@ export const store = new Vuex.Store({
         },*/
     },
     mutations:{
+        setCity(state, data){
+            state.cities = data;
+        },
+        setPage(state, page){
+            state.page = page;
+        },
+        setCustomer(state, data){
+            state.customer = data;
+        },
+        setCustomerPhone(state, phone){
+            state.customer.Phone = phone;
+        },
         setUnitTypeData(state, data){
             state.unitTypes = data;
         },
@@ -59,20 +79,93 @@ export const store = new Vuex.Store({
         {
             var products = state.allProducts.filter(product => (product.ProductTypeID == catID));
             products.forEach(e => {
-                e.show = false;
+                e.showInfo = false;
                 e.qty = 1;
               });
             
             state.products = products;
         },
-        setPage(state, page){
-            state.page = page;
-        },
         ScbNoAddOne(state){
             state.shoppingCartBadge++;
+        },
+        SetCustomer(state, data){
+            state.customer = data;
         }
     },
     actions: {
+        async setCityData(context){
+            await axios.get('http://localhost:3000/city').then(
+                result => {
+                    //alert(result.data) 
+                    context.commit('setCity', result.data);
+                },
+                error => {
+                    console.log('setCity:'+error)
+                }
+            )
+        },
+        async insertCustomer(context, customer){
+            var city = this.state.cities.find(city => {
+                return customer.cityName == city.Name;
+            })
+            return new Promise((resolve, reject) => {
+                axios.post('http://localhost:3000/customer/new',{phone:customer.phone,address:customer.address,cityID:city.ID}).then(
+                result => {
+                    //alert(result.data);
+                    resolve(result);
+                    /*if(result.data.toString().startsWith('Error'))
+                        context.commit('setCustomer', false);
+                    }
+                    else
+                    {
+                        console.log('set address success');
+                    }*/
+                },
+                error => {
+                     reject(error);
+                })
+            })
+        },
+        async setCustomerAddress(context, customer){
+            return new Promise((resolve, reject) => {
+                axios.post('http://localhost:3000/customer/',{phone:customer.phone,address:customer.address}).then(
+                result => {
+                    //alert(result.data);
+                    resolve(result);
+                    /*if(result.data.toString().startsWith('Error'))
+                    {
+                        context.commit('setCustomer', false);
+                    }
+                    else
+                    {
+                        console.log('set address success');
+                    }*/
+                },
+                error => {
+                    context.commit('setCustomer', false);
+                    reject(error);
+                })
+            })
+        },
+        async getCustomerData(context, phone){
+            await axios.get('http://localhost:3000/customer/'+phone).then(
+                result => {
+                    //alert(result.data) 
+                    if(result.data.toString().startsWith('Error'))
+                    {
+                        context.commit('setCustomer', false);
+                    }
+                    else
+                    {
+                        context.commit('setCustomer', result.data);
+                    }
+                },
+                error => {
+                    context.commit('setCustomer', false);
+                    alert('customer:'+error);
+                }
+            )
+        },
         async getProductData(context, catID){
             await axios.get('http://localhost:3000/product/').then(
                 result => {
@@ -101,7 +194,7 @@ export const store = new Vuex.Store({
             await axios.get('http://localhost:3000/unittype').then(
                 result => {
                     //alert(result.data) 
-                    context.commit('setUnitTypeData', result.data);
+                    context.commit('SetCustomer', result.data);
                 },
                 error => {
                     alert('utype:'+error)
@@ -110,7 +203,18 @@ export const store = new Vuex.Store({
         },
         getProductsInCat: (context, catID) => {console.log('data2');
             context.commit('getProductsInCat', catID);
-        }
+        },
+        async GetCustomerByPhone(context, phone){
+            await axios.get('http://localhost:3000/customer/'+phone).then(
+                result => {
+                    //alert(result.data) 
+                    context.commit('setProductData', result.data);
+                },
+                error => {
+                    alert('get customer error:'+error)
+                }
+            )
+        },
     }
 })
 
