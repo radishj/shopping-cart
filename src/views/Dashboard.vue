@@ -90,15 +90,15 @@
                         <div class="flex-grow-1"></div>
 
                         <v-btn v-show="product.Info"
-                            @click="productsShowInfo[product.PID] = !productsShowInfo[product.PID]"
+                            @click="product.showInfo = !product.showInfo"
                             icon
                         >
-                            <v-icon>{{productsShowInfo[product.PID]?'mdi-chevron-up':'mdi-chevron-down'}}</v-icon>
+                            <v-icon>{{hasInfo(product)?'mdi-chevron-up':'mdi-chevron-down'}}</v-icon>
                         </v-btn>
                     </v-card-actions>
 
                     <v-expand-transition>
-                    <div v-show="productsShowInfo[product.PID]">
+                    <div v-show="product.showInfo">
                         <v-card-text>
                             {{product.Info}}
                         </v-card-text>
@@ -137,7 +137,7 @@
                         <v-text-field reverse=true label="每份量" class="pl-4" :value="product.Unit" readonly=true></v-text-field>
                     </v-col>
                     <v-col cols="2">
-                        <v-text-field reverse=true label="份数" class="pl-4" :value="product.qty" v-model="product.qty" @input="productQty()"></v-text-field>
+                        <v-text-field reverse=true label="份数" class="pl-4" :value="product.qty" v-model="product.qty"></v-text-field>
                     </v-col>
                     <v-col cols="2" class="mt-4 text-right">
                         <div v-if="product.TAX == 0">
@@ -241,7 +241,6 @@ export default{
         drawer: false,
         catSelected: 'select',
         show: false,
-        productsShowInfo: {},
         totalTax:0,
         total:0,
         info:'',
@@ -255,6 +254,10 @@ export default{
     methods:{
         ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
+        hasInfo(p)
+        {
+            return p.showInfo;
+        },
         setShowImgDlg(p)
         {
             this.showImgDlgFolder = p.Folder;
@@ -341,9 +344,6 @@ export default{
         {//alert(Object.keys(state));
             this.catSelected = cat.Name;
             await this.getProductsInCat(cat.ID);
-            this.theProducts.forEach(p => {
-                this.$set(this.productsShowInfo, p.PID, false);
-            })
             this.drawer = false;
         },
         getPage()
@@ -395,9 +395,6 @@ export default{
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);
-        this.theProducts.forEach(p => {
-            this.$set(this.productsShowInfo, p.PID, false);
-        })
         this.catSelected = this.getCatName(0);
         this.showWarning = !this.customer.city.area.SaleIsOn;
         axios.get('http://localhost:3000/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(

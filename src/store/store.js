@@ -142,13 +142,16 @@ export const store = new Vuex.Store({
         },
         getProductsInCat: (state, catID) => 
         {
+            state.products.length = 0;
             var products = state.allProducts.filter(product => (product.ProductTypeID == catID));
             products.forEach(e => {
-                e.showInfo = false;
-                e.qty = 1;
+                var newP = {
+                    ...e,
+                    qty: 1,
+                    showInfo : false
+                }
+                state.products.push(newP);
               });
-            
-            state.products = products;
         },
         addSelectedP: (state, p) =>
         {
