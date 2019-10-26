@@ -4,6 +4,7 @@ import Start from './views/Start.vue'
 import Dashboard from './views/Dashboard.vue'
 import NewCustomer from './views/NewCustomer.vue'
 import OldCustomer from './views/OldCustomer.vue'
+import Finish from './views/Finish.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -29,6 +30,11 @@ export default new Router({
             path: '/OldCustomer',
             name: 'OldCustomer',
             component: OldCustomer
+        },
+        {
+            path: '/Finish',
+            name: 'Finish',
+            component: Finish
         },
         {
             path: '/about',

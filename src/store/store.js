@@ -4,17 +4,47 @@ import Vuex from 'vuex';
 import axios from 'axios';
 
 Vue.use(Vuex);
+function getDiscountTotal()
+{
+    return (parseFloat(store.state.total)*0.03).toFixed(2);
+}
+function getSProductsTotal()
+{
+    var total=0;
+    store.state.selectedProducts.forEach(e => {
+        total += e.UnitPrice * e.Unit * e.qty;
+    })
+    return parseFloat(total).toFixed(2);
+}
+function getSProductsTaxTotal()
+{
+    var taxTotal=0;
+    const PST = 0.07;
+    const GST = 0.05;
+    store.state.selectedProducts.forEach(e => {//alert('aa:'+e.tax+';' +e.TAX&2/2+';'+e.TAX&1);
+        var tax = (e.TAX&2)/2*PST + (e.TAX&1)*GST;//alert(tax);
+        taxTotal += e.UnitPrice * tax * e.Unit * e.qty;
+    })
+    return parseFloat(taxTotal).toFixed(2);
+}
 
 export const store = new Vuex.Store({
     state:{
+        deliveryChargeInfo: '',
+        total:0,
+        tax:0,
+        hasDiscount:false,
+        discount:0,
         page:'productPick',
         categories: [],
+        selectedProducts: [],
         allProducts: [],
         products: [],
         unitTypes: [],
         cities: [],
         shoppingCartBadge:0,
-        customer:{}
+        customer:{},
+        newOrderID: -1
     },
     getters:{
         page: state => {
@@ -38,6 +68,9 @@ export const store = new Vuex.Store({
         scbNo: state => {
             return state.shoppingCartBadge;
         },
+        selectedProducts: state => {
+            return state.selectedProducts;
+        },
         theProducts: state => {
             //alert(state.products.length);
 
@@ -53,7 +86,39 @@ export const store = new Vuex.Store({
         setCity(state, data){
             state.cities = data;
         },
+        setCalc(state){
+            state.total = getSProductsTotal();
+            state.tax = getSProductsTaxTotal();
+            state.discount = getDiscountTotal();
+            var theTotal = (parseFloat(state.total) + parseFloat(state.tax) - (state.hasDiscount|0)*parseFloat(state.discount)).toFixed(2);
+            if(state.customer.city.Name == 'Victoria')
+            {
+                if(theTotal<60)
+                {
+                    state.deliveryChargeInfo = '总价不足$60, 需收 $5 送货费'
+                }
+                else
+                {
+                    state.deliveryChargeInfo = '';
+                }
+            }
+            else
+            {
+                if(theTotal<90)
+                {
+                    state.deliveryChargeInfo = '总价不足$90, 收$5送货费'
+                }
+                else
+                {
+                    state.deliveryChargeInfo = '';
+                }
+            }
+        },
         setPage(state, page){
+            if(page == "basket")
+            {
+                store.commit('setCalc');
+            }
             state.page = page;
         },
         setCustomer(state, data){
@@ -84,6 +149,10 @@ export const store = new Vuex.Store({
               });
             
             state.products = products;
+        },
+        addSelectedP: (state, p) =>
+        {
+            state.selectedProducts.push(p);
         },
         ScbNoAddOne(state){
             state.shoppingCartBadge++;
@@ -201,7 +270,7 @@ export const store = new Vuex.Store({
                 }
             )
         },
-        getProductsInCat: (context, catID) => {console.log('data2');
+        getProductsInCat: (context, catID) => {
             context.commit('getProductsInCat', catID);
         },
         async GetCustomerByPhone(context, phone){

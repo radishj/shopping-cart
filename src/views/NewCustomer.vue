@@ -26,7 +26,7 @@
                     label="发货城市"
                     class="w-8"
                     :rules="[rules.requireSelected]"
-                    v-on:change="changeDelivery"
+                    v-on:change="changeCity"
                 ></v-select>
             </v-card>
             <v-card
@@ -41,7 +41,7 @@
                     v-on:change="changeDelivery"
                 ></v-select>
             </v-card>
-            <v-card v-if="showStreetName"
+            <v-card v-if="$store.state.isDelivery"
                 class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
             >
                 <v-text-field   
@@ -70,7 +70,7 @@
 </template>
 <script>
 //import Vue from 'vue'
-/*eslint no-console: "error"*/
+/*eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import {mapGetters} from 'vuex';
 import router from '../router';
 export default{
@@ -79,7 +79,6 @@ export default{
         lCityNames:[],
         delieryTypes:["自取","送货上门"],
         delieryType:"",
-        showStreetName:false,
         BtnGoNextText:"继续", 
         TFAddress:{Label:"街道名（号码隐藏，如需更改请与我们联系）"},
         rules: {
@@ -96,15 +95,25 @@ export default{
         ...mapGetters(['customer','cities']),
     },
     methods:{
-        changeDelivery(a){
-            if(a==this.delieryTypes[0])
+        changeCity(city){
+            if(city == 'Victoria')
             {
-                this.showStreetName=false;
+                this.delieryTypes = ["送货上门"];
+            }
+            else
+            {
+                this.delieryTypes = ["自取","送货上门"];
+            }
+        },
+        changeDelivery(a){
+            if(a=='自取')
+            {
+                this.$store.state.isDelivery=false;
                 this.BtnGoNextText = '信息正确，去选商品'
             }
-            else if(a==this.delieryTypes[1])
+            else
             {
-                this.showStreetName=true;
+                this.$store.state.isDelivery=true;
                 //this.$nextTick(function () {
                 this.TFAddress.Label = '请输入送货地址（街道号码和街道名）';
                 this.BtnGoNextText = '提交我的信息，去选商品'
@@ -112,11 +121,8 @@ export default{
         },
         async goNext(){
             if(this.$refs.form.validate()){
-                await this.$store.dispatch('insertCustomer', {phone:this.lCustomer.Phone, address:this.lCustomer.Address,cityName:this.lCustomer.city.Name}).then(response=>{
-                        console.log(response.data);
-                    }, error=>{
-                        console.log(error)
-                    });
+                await this.$store.dispatch('insertCustomer', {phone:this.lCustomer.Phone, address:this.lCustomer.Address,cityName:this.lCustomer.city.Name});
+                await this.$store.dispatch('getCustomerData', this.lCustomer.Phone);
                 router.push('Dashboard') ;
             }
         },

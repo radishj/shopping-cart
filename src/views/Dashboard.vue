@@ -1,6 +1,6 @@
 <template>
     <div>
-    <div class="dashboard"  v-if="page==='productPick'">
+    <div class="dashboard"  v-if="$store.state.page==='productPick'">
     <v-list-item>
         <v-btn @click="drawer = !drawer;"  color="indigo lighten-2 white--text" fab>
             <v-icon>mdi-sitemap</v-icon>
@@ -43,6 +43,9 @@
       </v-card>
     </v-navigation-drawer>
 
+    <v-alert type="error" v-if="showWarning">
+      订单没有开放，订单开放后会我们群和公众号里发信息，敬请关注，谢谢！
+    </v-alert>
     <v-container class="my-5">
         <v-row class="mb-6" no-gutters>
             <v-col
@@ -96,7 +99,7 @@
     </v-container>
     </div>
 
-    <div class="basket"  v-if="page==='basket'">
+    <div class="basket"  v-if="$store.state.page==='basket'">
         <v-container>
             <span></span><h2 class="title mb-4"><v-icon size=40>shopping_cart</v-icon>  已选商品 :</h2>
             <div>
@@ -119,10 +122,10 @@
                         ${{product.UnitPrice}}/{{product.unittypeName}}
                     </v-col>
                     <v-col cols="1">
-                        <v-text-field reverse=true label="每份量" class="pl-4" v-model="product.Unit" readonly=true></v-text-field>
+                        <v-text-field reverse=true label="每份量" class="pl-4" :value="product.Unit" readonly=true></v-text-field>
                     </v-col>
                     <v-col cols="2">
-                        <v-text-field reverse=true label="份数" class="pl-4" v-model="product.qty"></v-text-field>
+                        <v-text-field reverse=true label="份数" class="pl-4" :value="product.qty" v-model="product.qty" @input="productQty()"></v-text-field>
                     </v-col>
                     <v-col cols="2" class="mt-4 text-right">
                         <div v-if="product.TAX == 0">
@@ -141,18 +144,43 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-spacer></v-spacer>
-                    <v-col cols="2" class="mt-4 text-right">
-                        Tax: ${{getSProductsTaxTotal()}}
+                    <v-col cols="9" class="mt-4 text-right">
+                        Tax:
                     </v-col>
-                    <v-col cols="1" class="text-center">
+                    <v-col cols="2" class="mt-4 text-right">
+                        ${{thetax()}}
+                    </v-col>
+                    <v-col cols="1" class="mt-4 text-right">
+                    </v-col>
+                </v-row>
+                <v-row no-gutters v-if="$store.state.hasDiscount">
+                    <v-spacer></v-spacer>
+                    <v-col cols="9" class="mt-4 text-right">
+                        (连续团购)Discount:
+                    </v-col>
+                    <v-col cols="2" class="mt-4 text-right">
+                        ${{thediscount()}}
+                    </v-col>
+                    <v-col cols="1" class="mt-4 text-right">
                     </v-col>
                 </v-row>
                 <v-row no-gutters>
                     <v-spacer></v-spacer>
-                    <v-col cols="2" class="mt-4 text-right">
-                        Total: ${{getSProductsTotal()}}
+                    <v-col cols="7" class="mt-4 text-left pink--text" v-if="$store.state.deliveryChargeInfo!=''">
+                        {{this.$store.state.deliveryChargeInfo}}
                     </v-col>
-                    <v-col cols="1" class="text-center">
+                    <v-col cols="2" class="mt-4 text-right">
+                        Total:
+                    </v-col>
+                    <v-col cols="2" class="mt-4 text-right">
+                        ${{thetotal()}}
+                    </v-col>
+                    <v-col cols="1" class="mt-4 text-right">
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                     <v-col cols="10" class="mt-4 text-left">
+                        <v-text-field label="注释（您的要求或建议）：" class="" v-model="info"></v-text-field>
                     </v-col>
                 </v-row>
             </v-container>
@@ -187,26 +215,92 @@
 
 <script>
 //import Vue from 'vue'
+/*eslint no-console: [0, { allow: ["warn", "error"] }] */
+import axios from 'axios';
 import {mapGetters, mapMutations, mapActions} from 'vuex';
+import router from '../router';
 export default{
     data: () => ({
+        saleID: -1,
+        showWarning: false,
         drawer: false,
         catSelected: 'select',
         show: false,
         productsShowInfo: {},
-        selectedProducts: [],
         totalTax:0,
-        total:0
+        total:0,
+        info:'',
+        finished: false,
+        showDeliveryCharge: false
     }),
     computed:{
-        ...mapGetters(['page','cats', 'theProducts', 'getCatName', 'scbNo']),
+
+                ...mapGetters(['page', 'customer', 'cats', 'theProducts', 'selectedProducts', 'getCatName', 'scbNo']),
     },
     methods:{
-        ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne']),
+        ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
-        order()
+        productQty()
         {
-            
+            this.$store.commit('setCalc');
+        },
+        async order()
+        {
+            var discount = 0;
+            if(this.$store.state.hasDiscount)
+                discount = 0.03;
+            var newOrder = {
+                phone : this.customer.Phone,
+                saleID : this.saleID,
+                info : this.info,
+                isDelivery : this.$store.state.isDelivery,
+                discount : discount,
+                total : this.thetotal()
+            };
+            await axios.post('http://localhost:3000/order/new',newOrder).then(
+                result => {
+                    this.$store.state.newOrderID = result.data.ID;
+                    this.selectedProducts.forEach(async p => {
+                        var newItem = {
+                            orderNo : result.data.ID,
+                            productID : p.PID,
+                            unitPrice : p.UnitPrice,
+                            UnitWeight : p.Unit,
+                            orderedQty : p.qty,
+                            unit : p.Unit,
+                            qty : p.qty,
+                            info : p.Info,
+                            wUnitType : p.WUnitType
+                        };
+                        await axios.post('http://localhost:3000/orderitem/new',newItem).then(
+                            async (result) => {
+                                if(result.productID == p.PID)
+                                {
+                                    var pStock = {
+                                        PID : p.PID,
+                                        consumedQty : p.Unit * p.qty
+                                    }
+                                    await axios.post('http://localhost:3000/product/stockqty',pStock);
+                                }
+                            }
+                        );
+                    })
+                }
+            );
+            if(this.$store.state.newOrderID >= 0)
+            {
+                this.finished = true;
+                router.push('Finish') ;
+            }
+        },
+        thetotal() {
+            return (parseFloat(this.$store.state.total) + parseFloat(this.$store.state.tax) - (this.$store.state.hasDiscount|0)*parseFloat(this.$store.state.discount)).toFixed(2);
+        },
+        thetax() {
+            return this.$store.state.tax;
+        },
+        thediscount() {
+            return this.$store.state.discount;
         },
         taxString(tax)
         {
@@ -221,28 +315,7 @@ export default{
                 return "T2"
             }
         },
-
-        getSProductsTotal()
-        {
-            var total=0;
-            this.selectedProducts.forEach(e => {
-                total += e.UnitPrice * e.Unit * e.qty;
-            })
-            total += this.totalTax;
-            return parseFloat(total).toFixed(2);
-        },
-        getSProductsTaxTotal()
-        {
-            var taxTotal=0;
-            const PST = 0.07;
-            const GST = 0.05;
-            this.selectedProducts.forEach(e => {//alert('aa:'+e.tax+';' +e.TAX&2/2+';'+e.TAX&1);
-                var tax = (e.TAX&2)/2*PST + (e.TAX&1)*GST;//alert(tax);
-                taxTotal += e.UnitPrice * tax * e.Unit * e.qty;
-            })
-            this.totalTax = parseFloat(taxTotal).toFixed(2);
-            return this.totalTax;
-        },
+ 
         async updateSelected(cat)
         {//alert(Object.keys(state));
             this.catSelected = cat.Name;
@@ -259,6 +332,8 @@ export default{
         },
         selectP(product)
         {
+            if(this.showWarning)
+                return;
             //product.qty = 1;
             var newP = {
                 ...product,
@@ -269,21 +344,27 @@ export default{
             });
             if(!pSelected)
             {
-                this.selectedProducts.push(newP);
+                this.addSelectedP(newP);
                 this.ScbNoAddOne();
             }
+            this.$store.commit('setCalc');
             //$set(product, 'qty', 2);
             //Vue.set(this.selectedProducts,this.selectedProducts.length-1,copyProduct);
         },
     },
     beforeRouteLeave(to, from, next){
-        const answer = window.confirm('您购物车里的货品还未提交，确定要离开吗？')
-        if(answer) {
+        if(this.finished)
             next();
-        } else {
-            next(false);
+        else
+        {
+            const answer = window.confirm('您购物车里的货品还未提交，确定要离开吗？')
+            if(answer) {
+                next();
+            } else {
+                next(false);
+            }
         }
-    },
+     },
 
     async mounted(){
         //this.getProductTypeData();
@@ -293,6 +374,26 @@ export default{
             this.$set(this.productsShowInfo, p.PID, false);
         })
         this.catSelected = this.getCatName(0);
+        this.showWarning = !this.customer.city.area.SaleIsOn;
+        axios.get('http://localhost:3000/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
+                result => {
+                    this.saleID = result.data[0].Id;
+                    axios.get('http://localhost:3000/order/ps/'+this.customer.Phone+'/'+result.data[1].Id).then(
+                        result => {
+                            if(result.data)
+                                this.$store.state.hasDiscount = true;
+                            else
+                                this.$store.state.hasDiscount = false;
+                        },
+                        error => {
+                            console.log('Error: discount, '+error);
+                        }
+                    )
+                },
+                error => {
+                    console.log('setCity:'+error);
+                }
+            )
         //await this.$store.dispatch('getProductsInCat',0); 
     },
 }

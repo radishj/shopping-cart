@@ -1,0 +1,136 @@
+<template>
+    <v-form ref="form">
+        <v-container fluid>
+            <v-card
+                class="d-flex justify-center purple--text text--darken-1" flat tile color="rgb(255, 0, 0, 0)"
+            >
+            <p class="font-weight-bold mb-2 mt-4">下单成功，您的订单号是：{{this.$store.state.newOrderID}}</p>
+            </v-card>
+            
+            <v-card
+                class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
+            >
+                <v-text-field
+                    :value = "customerPhone()"
+                    label="联系电话"
+                    class="w-8"
+                    readonly={true}
+                ></v-text-field>
+            </v-card>
+            <v-card
+                class="d-flex justify-left pl-12" flat tile color="rgb(0, 0, 0, 0)"
+            >
+                <v-text-field
+                    :value="$store.state.customer.city.Name"
+                    label="发货城市"
+                    class="w-8"
+                    readonly={true}
+                ></v-text-field>
+            </v-card>
+            <v-card
+                class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
+            >
+                <v-text-field
+                    :value="DeliveryType()"
+                    label="送货方式"
+                    class="w-8"
+                    readonly={true}
+                ></v-text-field>
+            </v-card>
+            <v-card
+                class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
+            >
+                <v-text-field   
+                    :value="OrderInfo1()"
+                    readonly={true}
+                    class="w-8"
+                ></v-text-field>
+            </v-card>
+            <v-card
+                class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
+            >
+                <v-text-field   
+                    :value="OrderInfo2()"
+                    readonly={true}
+                    class="w-8"
+                ></v-text-field>
+            </v-card>
+            <v-card
+                class="d-flex justify-center pl-3" flat tile color="rgb(255, 0, 0, 0)"
+            >
+            <v-btn
+                    color="success"
+                    class="ma-2 white--text pl-3 pr-5 pt-2 pb-5"
+                    ref="BtnGoNext"
+                    @click="goNext"
+                >
+                    提交我的信息; 去选商品
+                    <v-icon right dark>mdi-page-next-outline </v-icon>
+                </v-btn>
+            </v-card>
+        </v-container>
+    </v-form>
+</template>
+<script>
+import {mapGetters} from 'vuex';
+import util from '../components/shared/util.js';
+//import Vue from 'vue'
+/*eslint no-console: ["error", { allow: ["warn", "error"] }] */
+export default{
+    data: () => ({
+        lCustomer:{},
+        lCityNames:[],
+        delieryTypes:["自取","送货上门"],
+        delieryType:"",
+        BtnGoNextText:"继续", 
+        TFAddress:{Label:"街道名（号码隐藏，如需更改请与我们联系）"},
+        rules: {
+            required: value => !!value || '请填写',
+            requireSelected: value => !!value || '请选择',
+            counter: value => value.length <= 10 || 'Max 10 letters',
+            phone: value => { 
+                const pattern = /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s]{0,1}[0-9]{3}[-\s]{0,1}[0-9]{4}$/
+                return pattern.test(value) || '格式不对'
+            }
+        }
+    }),
+    computed:{
+        ...mapGetters(['customer','cities'])
+    },
+    methods:{
+        customerPhone()
+        {
+            return util.formatPhoneNumber(this.customer.Phone);
+        },
+        DeliveryType(){
+            var shortAddress = this.$store.state.customer.Address.substring(this.$store.state.customer.Address.indexOf(' ')+1);
+            if(this.$store.state.isDelivery)
+            {
+                return '送货上门，地址：'+shortAddress;
+            }
+            else 
+            {
+                '自己取货'
+            }
+        },
+        OrderInfo1()
+        {
+            var theTotal = (parseFloat(this.$store.state.total) + parseFloat(this.$store.state.tax) - (this.$store.state.hasDiscount|0)*parseFloat(this.$store.state.discount)).toFixed(2);
+            if(this.$store.state.deliveryChargeInfo!='')
+            {
+                theTotal += 5;
+            }
+            return '订单总价：$' + theTotal;
+        },
+        OrderInfo2()
+        {
+            return this.$store.state.customer.city.area.Info;
+        }
+    }
+}
+</script>
+
+<style scoped>
+    .w-8{max-width:80%}
+    .w-9{max-width:90%}
+</style>

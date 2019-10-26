@@ -11,7 +11,7 @@
                 class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
             >
                 <v-text-field
-                    :value=this.customer.Phone
+                    :value="customerPhone()"
                     label="联系电话"
                     class="w-8"
                     readonly=true
@@ -39,7 +39,7 @@
                     v-on:change="changeDelivery"
                 ></v-select>
             </v-card>
-            <v-card v-if="showStreetName"
+            <v-card v-if="$store.state.isDelivery"
                 class="d-flex justify-left pl-12" flat tile color="rgb(255, 0, 0, 0)"
             >
                 <v-text-field   
@@ -69,14 +69,14 @@
 </template>
 <script>
 //import Vue from 'vue'
-/*eslint no-console: "error"*/
+/*eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import {mapGetters} from 'vuex';
 import router from '../router';
+import util from '../components/shared/util.js';
 export default{
     data: () => ({
         delieryTypes:["自取","送货上门"],
         delieryType:"",
-        showStreetName:false,
         BtnGoNextText:"继续", 
         TFAddress:{Label:"街道名（号码隐藏，如需更改请与我们联系）",Readonly:true,address:""},
         rules: {
@@ -93,16 +93,20 @@ export default{
         ...mapGetters(['customer']),
     },
     methods:{
+        customerPhone()
+        {
+            return util.formatPhoneNumber(this.customer.Phone);
+        },
         changeDelivery(a){
-            if(a==this.delieryTypes[0])
+            if(a=='自取')
             {
-                this.showStreetName=false;
+                this.$store.state.isDelivery=false;
                 this.TFAddress.Readonly = true;
                 this.BtnGoNextText = '信息正确，去选商品'
             }
-            else if(a==this.delieryTypes[1])
+            else
             {
-                this.showStreetName=true;
+                this.$store.state.isDelivery=true;
                 //this.$nextTick(function () {
                 if(this.customer.Address=='' || this.customer.Address==false)
                 {
@@ -127,29 +131,19 @@ export default{
                 }
                 else if(this.BtnGoNextText == '提交我的信息; 去选商品')
                 {
-                    await this.$store.dispatch('setCustomerAddress', {phone:this.customer.Phone, address:this.TFAddress.address}).then(response=>{
-                        console.log(response.data)
-                    }, error=>{
-                        console.log(error)
-                    });
+                    await this.$store.dispatch('setCustomerAddress', {phone:this.customer.Phone, address:this.TFAddress.address});
                     router.push('Dashboard') ;
                 }
             }
         },
-        formatPhoneNumber(str){
-            //Filter only numbers from the input
-            let cleaned = ('' + str).replace(/\D/g, '');
-            //Check if the input is of correct length
-            let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-            if (match) {
-                return '(' + match[1] + ') ' + match[2] + '-' + match[3]
-            }
-            else
-                return null;
-        }
     },
     async mounted(){
-        this.TFAddress.address = this.customer.Address;
+        this.TFAddress.address = this.customer.Address.trim();
+        this.TFAddress.address = this.TFAddress.address.substring(this.TFAddress.address.indexOf(' ')+1);
+        if(this.$store.state.customer.city.Name == 'Victoria')
+        {
+            this.delieryTypes = ["送货上门"]
+        }
     },
 }
 </script>

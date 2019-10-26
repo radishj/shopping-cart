@@ -63,7 +63,7 @@ export default{
                 }
                 else
                 {
-                    this.setCustomer({Phone:this.phone, city:{Name:''}});
+                    await this.setCustomer({Phone:this.phone, city:{Name:''}});
                     router.push('NewCustomer') ;
                 }
             }
