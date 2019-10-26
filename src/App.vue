@@ -15,6 +15,7 @@
 <script>
 import Navigation from './components/shared/navigation'
 import Footer from './components/shared/footer'
+
 export default {
   name: 'App',
   components: { Navigation, Footer },

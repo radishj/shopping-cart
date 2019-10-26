@@ -138,6 +138,10 @@ export default{
         },
     },
     async mounted(){
+        if(this.customer.ID==null)
+        {
+             router.push('/') ;
+        }
         this.TFAddress.address = this.customer.Address.trim();
         this.TFAddress.address = this.TFAddress.address.substring(this.TFAddress.address.indexOf(' ')+1);
         if(this.$store.state.customer.city.Name == 'Victoria')

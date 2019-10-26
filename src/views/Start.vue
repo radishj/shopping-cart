@@ -59,11 +59,20 @@ export default{
                 await this.$store.dispatch('getCustomerData', this.phone);
                 if(this.customer)
                 {
-                    router.push('OldCustomer') ;
+                    localStorage.setItem('user',JSON.stringify(this.customer))
+
+                    if (localStorage.getItem('user') != null){
+                        router.push('OldCustomer') ;
+                    }
+                    else
+                    {
+                        alert('LocalStorage is not supported! Cannot continue.');
+                    }
                 }
                 else
                 {
                     await this.setCustomer({Phone:this.phone, city:{Name:''}});
+
                     router.push('NewCustomer') ;
                 }
             }

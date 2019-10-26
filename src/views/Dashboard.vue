@@ -47,6 +47,17 @@
       订单没有开放，订单开放后会我们群和公众号里发信息，敬请关注，谢谢！
     </v-alert>
     <v-container class="my-5">
+        <v-dialog
+            v-model="showImgDlg"
+            max-width="90%" 
+        >
+            <v-card @click="showImgDlg = false">
+                <v-img
+                    :src = "`https://mediavictoria.com/image/Processed/System/GroupSale_Large/${showImgDlgFolder}/${showImgDlgFileName}`"
+                    
+                ></v-img>
+            </v-card>
+        </v-dialog>
         <v-row class="mb-6" no-gutters>
             <v-col
                 v-for="product in theProducts"
@@ -58,8 +69,9 @@
             >
                 <v-card class="ma-1">
                     <v-img
-                    :src = "`https://mediavictoria.com/image/Processed/System/GroupSale/${product.Folder}/${product.ImageFileName}`"
-                    aspect-ratio = 1.333333
+                        :src = "`https://mediavictoria.com/image/Processed/System/GroupSale/${product.Folder}/${product.ImageFileName}`"
+                        aspect-ratio = 1.333333
+                        @click.stop="setShowImgDlg(product)"
                     ></v-img>
                     
                     <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
@@ -221,6 +233,9 @@ import {mapGetters, mapMutations, mapActions} from 'vuex';
 import router from '../router';
 export default{
     data: () => ({
+        showImgDlgFolder: '',
+        showImgDlgFileName: '',
+        showImgDlg: false,
         saleID: -1,
         showWarning: false,
         drawer: false,
@@ -240,6 +255,12 @@ export default{
     methods:{
         ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
+        setShowImgDlg(p)
+        {
+            this.showImgDlgFolder = p.Folder;
+            this.showImgDlgFileName = p.ImageFileName;
+            this.showImgDlg=true;
+        },
         productQty()
         {
             this.$store.commit('setCalc');
@@ -367,6 +388,10 @@ export default{
      },
 
     async mounted(){
+        if(this.$store.state.customer.ID==null)
+        {
+             router.push('/') ;
+        }
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);

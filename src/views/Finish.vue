@@ -74,6 +74,7 @@
 <script>
 import {mapGetters} from 'vuex';
 import util from '../components/shared/util.js';
+import router from '../router';
 //import Vue from 'vue'
 /*eslint no-console: ["error", { allow: ["warn", "error"] }] */
 export default{
@@ -125,6 +126,12 @@ export default{
         OrderInfo2()
         {
             return this.$store.state.customer.city.area.Info;
+        }
+    },
+    mounted(){
+        if(this.$store.state.customer.ID==null)
+        {
+             router.push('/') ;
         }
     }
 }

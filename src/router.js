@@ -7,7 +7,7 @@ import OldCustomer from './views/OldCustomer.vue'
 import Finish from './views/Finish.vue'
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
     mode: 'history',
     base: process.env.BASE_URL,
     routes:[
@@ -20,21 +20,30 @@ export default new Router({
             path: '/Dashboard',
             name: 'Dashboard',
             component: Dashboard,
+            meta: { 
+                requiresAuth: true
+            }
         },
         {
             path: '/NewCustomer',
             name: 'NewCustomer',
-            component: NewCustomer
+            component: NewCustomer,
         },
         {
             path: '/OldCustomer',
             name: 'OldCustomer',
-            component: OldCustomer
+            component: OldCustomer,
+            meta: { 
+                requiresAuth: true
+            }
         },
         {
             path: '/Finish',
             name: 'Finish',
-            component: Finish
+            component: Finish,
+            meta: { 
+                requiresAuth: true
+            }
         },
         {
             path: '/about',
@@ -42,4 +51,22 @@ export default new Router({
             component: () => import('./views/About.vue')
         }
     ]
-})
+});
+/*
+router.beforeEach((to, from, next) => {
+    if(to.matched.some(record => record.meta.requiresAuth)) {
+        var user = localStorage.getItem('user');
+        if (user == null) {
+            next({
+                path: '/',
+                params: { nextUrl: to.fullPath }
+            })
+        } else {
+            next()
+        }
+    }else {
+        next() 
+    }
+});*/
+
+export default router
