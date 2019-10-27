@@ -11,7 +11,7 @@
                 isDelivery : this.$store.state.isDelivery,
                 discount : this.$store.state.isDelivery
             };
-            await axios.post('http://localhost:3000/order/new',newOrder).then(
+            await axios.post(process.env.DATA_SERVER_URL+'/order/new',newOrder).then(
                 result => {
                     this.$store.state.newOrderID = result.data.ID;
                     this.selectedProducts.forEach( p => {
@@ -26,7 +26,7 @@
                             info : p.Info,
                             wUnitType : p.WUnitType
                         };
-                        axios.post('http://localhost:3000/orderitem/new',newItem).then(
+                        axios.post(process.env.DATA_SERVER_URL+'/orderitem/new',newItem).then(
                             result => {
                                 if(result.productID == p.PID)
                                 {
@@ -34,7 +34,7 @@
                                         PID : p.PID,
                                         consumedQty : p.Unit * p.qty
                                     }
-                                    await axios.post('http://localhost:3000/product/stockqty',pStock);
+                                    await axios.post(process.env.DATA_SERVER_URL+'/product/stockqty',pStock);
                                 }
                             }
                         );

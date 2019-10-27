@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+require('dotenv').config();
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
@@ -44,7 +45,8 @@ export const store = new Vuex.Store({
         cities: [],
         shoppingCartBadge:0,
         customer:{},
-        newOrderID: -1
+        newOrderID: -1,
+        SERVER_URL: process.env.VUE_APP_DATA_SERVER_URL  //'http://localhost:3000' //
     },
     getters:{
         page: state => {
@@ -166,7 +168,7 @@ export const store = new Vuex.Store({
     },
     actions: {
         async setCityData(context){
-            await axios.get('http://localhost:3000/city').then(
+            await axios.get(this.state.SERVER_URL+'/city').then(
                 result => {
                     //alert(result.data) 
                     context.commit('setCity', result.data);
@@ -181,7 +183,7 @@ export const store = new Vuex.Store({
                 return customer.cityName == city.Name;
             })
             return new Promise((resolve, reject) => {
-                axios.post('http://localhost:3000/customer/new',{phone:customer.phone,address:customer.address,cityID:city.ID}).then(
+                axios.post(this.state.SERVER_URL+'/customer/new',{phone:customer.phone,address:customer.address,cityID:city.ID}).then(
                 result => {
                     //alert(result.data);
                     resolve(result);
@@ -200,7 +202,7 @@ export const store = new Vuex.Store({
         },
         async setCustomerAddress(context, customer){
             return new Promise((resolve, reject) => {
-                axios.post('http://localhost:3000/customer/',{phone:customer.phone,address:customer.address}).then(
+                axios.post(this.state.SERVER_URL+'/customer/',{phone:customer.phone,address:customer.address}).then(
                 result => {
                     //alert(result.data);
                     resolve(result);
@@ -220,7 +222,7 @@ export const store = new Vuex.Store({
             })
         },
         async getCustomerData(context, phone){
-            await axios.get('http://localhost:3000/customer/'+phone).then(
+            await axios.get(this.state.SERVER_URL+'/customer/'+phone).then(
                 result => {
                     //alert(result.data) 
                     if(result.data.toString().startsWith('Error'))
@@ -239,7 +241,7 @@ export const store = new Vuex.Store({
             )
         },
         async getProductData(context, catID){
-            await axios.get('http://localhost:3000/product/').then(
+            await axios.get(this.state.SERVER_URL+'/product/').then(
                 result => {
                     //alert(result.data) 
                     context.commit('setProductData', result.data);
@@ -252,7 +254,7 @@ export const store = new Vuex.Store({
         },
         async getProductTypeData(context){//alert(state.categories.length);
             //debugger;
-            await axios.get('http://localhost:3000/producttype/').then(
+            await axios.get(this.state.SERVER_URL+'/producttype/').then(
                 result => {
                     //alert(result.data) 
                     context.commit('setProductTypeData', result.data);
@@ -263,7 +265,7 @@ export const store = new Vuex.Store({
             )
         },
         async getUnitTypeData(context){//alert(state.unitTypes.length);
-            await axios.get('http://localhost:3000/unittype').then(
+            await axios.get(this.state.SERVER_URL+'/unittype').then(
                 result => {
                     //alert(result.data) 
                     context.commit('SetCustomer', result.data);
@@ -277,7 +279,7 @@ export const store = new Vuex.Store({
             context.commit('getProductsInCat', catID);
         },
         async GetCustomerByPhone(context, phone){
-            await axios.get('http://localhost:3000/customer/'+phone).then(
+            await axios.get(this.state.SERVER_URL+'/customer/'+phone).then(
                 result => {
                     //alert(result.data) 
                     context.commit('setProductData', result.data);

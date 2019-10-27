@@ -137,7 +137,7 @@
                         <v-text-field reverse=true label="每份量" class="pl-4" :value="product.Unit" readonly=true></v-text-field>
                     </v-col>
                     <v-col cols="2">
-                        <v-text-field reverse=true label="份数" class="pl-4" :value="product.qty" v-model="product.qty"></v-text-field>
+                        <v-text-field reverse=true label="份数" class="pl-4" :value="product.qty" v-model="product.qty" @input="productQty()"></v-text-field>
                     </v-col>
                     <v-col cols="2" class="mt-4 text-right">
                         <div v-if="product.TAX == 0">
@@ -245,7 +245,8 @@ export default{
         total:0,
         info:'',
         finished: false,
-        showDeliveryCharge: false
+        showDeliveryCharge: false,
+        SERVER_URL: process.env.VUE_APP_DATA_SERVER_URL
     }),
     computed:{
 
@@ -277,7 +278,7 @@ export default{
                 discount : discount,
                 total : this.thetotal()
             };
-            await axios.post('http://localhost:3000/order/new',newOrder).then(
+            await axios.post(this.SERVER_URL+'/order/new',newOrder).then(
                 result => {
                     this.$store.state.newOrderID = result.data.ID;
                     this.selectedProducts.forEach(async p => {
@@ -292,7 +293,7 @@ export default{
                             info : p.Info,
                             wUnitType : p.WUnitType
                         };
-                        await axios.post('http://localhost:3000/orderitem/new',newItem).then(
+                        await axios.post(this.SERVER_URL+'/orderitem/new',newItem).then(
                             async (result) => {
                                 if(result.productID == p.PID)
                                 {
@@ -300,7 +301,7 @@ export default{
                                         PID : p.PID,
                                         consumedQty : p.Unit * p.qty
                                     }
-                                    await axios.post('http://localhost:3000/product/stockqty',pStock);
+                                    await axios.post(this.SERVER_URL+'/product/stockqty',pStock);
                                 }
                             }
                         );
@@ -393,10 +394,10 @@ export default{
         await this.$store.dispatch('getProductData', 0);
         this.catSelected = this.getCatName(0);
         this.showWarning = !this.customer.city.area.SaleIsOn;
-        axios.get('http://localhost:3000/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
+        axios.get(this.SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
                 result => {
                     this.saleID = result.data[0].Id;
-                    axios.get('http://localhost:3000/order/ps/'+this.customer.Phone+'/'+result.data[1].Id).then(
+                    axios.get(this.SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+result.data[1].Id).then(
                         result => {
                             if(result.data)
                                 this.$store.state.hasDiscount = true;
