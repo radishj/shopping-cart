@@ -93,7 +93,7 @@
                             @click="product.showInfo = !product.showInfo"
                             icon
                         >
-                            <v-icon>{{hasInfo(product)?'mdi-chevron-up':'mdi-chevron-down'}}</v-icon>
+                            <v-icon>{{product.showInfo?'mdi-chevron-up':'mdi-chevron-down'}}</v-icon>
                         </v-btn>
                     </v-card-actions>
 
@@ -254,10 +254,6 @@ export default{
     methods:{
         ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
-        hasInfo(p)
-        {
-            return p.showInfo;
-        },
         setShowImgDlg(p)
         {
             this.showImgDlgFolder = p.Folder;
