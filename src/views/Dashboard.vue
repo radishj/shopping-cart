@@ -213,7 +213,7 @@
 
                 <v-col>
                     <v-card
-                    tile
+                    tile v-if="!showWarning"
                     >
                     <v-btn color="success" @click="order()" larger min-width="150" style="float: right;">提交我的订单 &gt;&gt;</v-btn>
                     </v-card>

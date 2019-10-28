@@ -145,7 +145,7 @@ export const store = new Vuex.Store({
         getProductsInCat: (state, catID) => 
         {
             state.products.length = 0;
-            var products = state.allProducts.filter(product => (product.ProductTypeID == catID));
+            var products = state.allProducts.filter(product => (product.PType == catID));
             products.forEach(e => {
                 var newP = {
                     ...e,
