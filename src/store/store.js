@@ -62,7 +62,7 @@ export const store = new Vuex.Store({
             return state.cities;
         },
         getCatName: state => id => {
-            return state.categories[id].Name;
+            return state.categories.find(cat => {return cat.ID==id;}).Name;
         },
         getUnitTypeName: state => id => {
             return state.unitTypes[id].Name;

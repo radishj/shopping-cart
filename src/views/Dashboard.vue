@@ -400,7 +400,7 @@ export default{
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);
-        this.catSelected = this.getCatName(0);
+        this.catSelected = this.getCatName(3);
         this.showWarning = !this.customer.city.area.SaleIsOn;
         axios.get(this.SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
                 async result => {
@@ -434,7 +434,7 @@ export default{
                     console.log('setCity:'+error);
                 }
             )
-        //await this.$store.dispatch('getProductsInCat',0); 
+        this.$store.dispatch('getProductsInCat',3); 
     },
 }
 </script>
