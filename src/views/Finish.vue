@@ -91,7 +91,7 @@ export default{
             return util.formatPhoneNumber(this.customer.Phone);
         },
         DeliveryType(){
-            var shortAddress = this.$store.state.customer.Address.substring(this.$store.state.customer.Address.indexOf(' ')+1);
+            //var shortAddress = this.$store.state.customer.Address.substring(this.$store.state.customer.Address.indexOf(' ')+1);
             if(this.$store.state.isDelivery)
             {
                 return '送货上门，地址：'+this.$store.state.customer.Address;
@@ -118,7 +118,7 @@ export default{
     mounted(){
         if(this.$store.state.customer.ID==null)
         {
-             router.push('/') ;
+             router.push('/start') ;
         }
     }
 }

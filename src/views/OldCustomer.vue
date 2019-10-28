@@ -140,7 +140,7 @@ export default{
     async mounted(){
         if(this.customer.ID==null)
         {
-             router.push('/') ;
+             router.push('/start') ;
         }
         this.TFAddress.address = this.customer.Address.trim();
         this.TFAddress.address = this.TFAddress.address.substring(this.TFAddress.address.indexOf(' ')+1);

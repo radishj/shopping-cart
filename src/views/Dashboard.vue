@@ -395,7 +395,7 @@ export default{
     async mounted(){
         if(this.$store.state.customer.ID==null)
         {
-             router.push('/') ;
+             router.push('/start') ;
         }
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
