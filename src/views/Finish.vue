@@ -55,19 +55,6 @@
                     class="w-8"
                 ></v-text-field>
             </v-card>
-            <v-card
-                class="d-flex justify-center pl-3" flat tile color="rgb(255, 0, 0, 0)"
-            >
-            <v-btn
-                    color="success"
-                    class="ma-2 white--text pl-3 pr-5 pt-2 pb-5"
-                    ref="BtnGoNext"
-                    @click="goNext"
-                >
-                    提交我的信息; 去选商品
-                    <v-icon right dark>mdi-page-next-outline </v-icon>
-                </v-btn>
-            </v-card>
         </v-container>
     </v-form>
 </template>

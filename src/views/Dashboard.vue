@@ -44,7 +44,7 @@
     </v-navigation-drawer>
 
     <v-alert type="error" v-if="showWarning">
-      订单没有开放，订单开放后会我们群和公众号里发信息，敬请关注，谢谢！
+        {{warning}}
     </v-alert>
     <v-container class="my-5">
         <v-dialog
@@ -116,7 +116,7 @@
             <span></span><h2 class="title mb-4"><v-icon size=40>shopping_cart</v-icon>  已选商品 :</h2>
             <div>
             <v-container>
-                <v-row v-for="product in selectedProducts"
+                <v-row v-for="(product,index) in selectedProducts"
                         :key= product.ID
                         no-gutters
                         >
@@ -149,7 +149,7 @@
                         </v-badge></div>
                     </v-col>
                     <v-col cols="1" class="text-center">
-                        <v-btn icon ripple>
+                        <v-btn icon ripple @click="removeProduct(index)">
                             <v-icon color="red lighten-1">delete</v-icon>
                         </v-btn>
                     </v-col>
@@ -238,6 +238,7 @@ export default{
         showImgDlg: false,
         saleID: -1,
         showWarning: false,
+        warning: "订单没有开放，订单开放后会我们群和公众号里发信息，敬请关注，谢谢！",
         drawer: false,
         catSelected: 'select',
         show: false,
@@ -255,6 +256,10 @@ export default{
     methods:{
         ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
+        removeProduct(index)
+        {
+            this.$store.state.selectedProducts.splice(index,1);
+        },
         setShowImgDlg(p)
         {
             this.showImgDlgFolder = p.Folder;
@@ -375,12 +380,15 @@ export default{
             next();
         else
         {
-            const answer = window.confirm('您购物车里的货品还未提交，确定要离开吗？')
-            if(answer) {
-                next();
-            } else {
-                next(false);
+            if(this.$store.state.customer.ID!=null){
+                const answer = window.confirm('您购物车里的货品还未提交，确定要离开吗？')
+                if(answer) {
+                    next();
+                } else {
+                    next(false);
+                }
             }
+            next();
         }
      },
 
@@ -395,8 +403,21 @@ export default{
         this.catSelected = this.getCatName(0);
         this.showWarning = !this.customer.city.area.SaleIsOn;
         axios.get(this.SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
-                result => {
+                async result => {
                     this.saleID = result.data[0].Id;
+                    await axios.get(this.SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+this.saleID).then(
+                        result => {
+                            if(result.data)
+                            {
+                                this.warning = "您本次团购的订单号是"+result.data.ID+",如需修改请微信或电话联系我们，7783502200，谢谢！";
+                                this.showWarning = true;
+                            }
+                            else
+                            {
+                                this.showWarning = false;
+                            }
+                        }
+                    )
                     axios.get(this.SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+result.data[1].Id).then(
                         result => {
                             if(result.data)
