@@ -1,4 +1,4 @@
-# shoppint-cart
+# shopping-cart
 
 ## Project setup
 ```
