@@ -94,7 +94,7 @@ export default{
             var shortAddress = this.$store.state.customer.Address.substring(this.$store.state.customer.Address.indexOf(' ')+1);
             if(this.$store.state.isDelivery)
             {
-                return '送货上门，地址：'+shortAddress;
+                return '送货上门，地址：'+this.$store.state.customer.Address;
             }
             else 
             {
