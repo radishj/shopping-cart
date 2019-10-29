@@ -54,6 +54,7 @@ export default{
     methods:{
         ...mapMutations(['setCustomer','setCustomerPhone']),
         async goNext(){
+            this.phone = this.phone.replace(/\D/g,'');
             this.setCustomerPhone(this.phone);
             if(this.$refs.form.validate()){
                 await this.$store.dispatch('getCustomerData', this.phone);
