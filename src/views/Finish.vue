@@ -98,7 +98,7 @@ export default{
             }
             else 
             {
-                '自己取货'
+                return '自己取货'
             }
         },
         OrderInfo1()

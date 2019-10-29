@@ -178,7 +178,7 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-spacer></v-spacer>
-                    <v-col cols="7" class="mt-4 text-left pink--text" v-if="$store.state.deliveryChargeInfo!=''">
+                    <v-col cols="7" class="mt-4 text-left pink--text" v-if="$store.state.isDelivery">
                         {{this.$store.state.deliveryChargeInfo}}
                     </v-col>
                     <v-col cols="2" class="mt-4 text-right">
@@ -246,7 +246,6 @@ export default{
         total:0,
         info:'',
         finished: false,
-        showDeliveryCharge: false,
         SERVER_URL: process.env.VUE_APP_DATA_SERVER_URL
     }),
     computed:{
@@ -388,7 +387,9 @@ export default{
                     next(false);
                 }
             }
-            next();
+            else{
+                next();
+            }
         }
      },
 
