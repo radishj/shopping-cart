@@ -17,11 +17,6 @@ let router = new Router({
             component: Start
         },
         {
-            path: '/start',
-            name: 'start',
-            component: Start
-        },
-        {
             path: '/Dashboard',
             name: 'Dashboard',
             component: Dashboard,

@@ -139,7 +139,12 @@ export const store = new Vuex.Store({
             state.products[data.i].qty = data.q;
         },
         setProductData: (state, data) => {
-            state.allProducts = data;
+            data.forEach(p => {
+                var newP = {
+                    ...p
+                }
+                state.allProducts.push(newP);
+            })
             //console.log('Total length:'+state.allProducts.length);
         },
         getProductsInCat: (state, catID) => 
@@ -150,7 +155,7 @@ export const store = new Vuex.Store({
                 var newP = {
                     ...e,
                     qty: 1,
-                    showInfo : false
+                    showInfo : false,
                 }
                 state.products.push(newP);
               });

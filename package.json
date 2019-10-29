@@ -55,5 +55,11 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "sourceMapPathOverrides": {
+    "webpack:///./src/*": "${webRoot}/*",
+    "webpack:///src/*": "${webRoot}/*",
+    "webpack:///*": "*",
+    "webpack:///./~/*": "${webRoot}/node_modules/*"
+  }
 }

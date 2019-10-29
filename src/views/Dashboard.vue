@@ -75,7 +75,7 @@
                     ></v-img>
                     
                     <v-card-text class="pa-0 ma-0" style="position:relative;top:-11px;right:-10px;">
-                        <v-btn absolute @click="selectP(product)" color="indigo lighten-3 white--text" class="shite--text" fab medium right top>
+                        <v-btn absolute @click="selectP(product)" v-bind:color="getColorString(product)" class="shite--text" fab medium right top>
                             <v-icon>shopping_cart</v-icon>
                         </v-btn>
                     </v-card-text>
@@ -233,6 +233,7 @@ import {mapGetters, mapMutations, mapActions} from 'vuex';
 import router from '../router';
 export default{
     data: () => ({
+        pSelectColor: [],
         showImgDlgFolder: '',
         showImgDlgFileName: '',
         showImgDlg: false,
@@ -255,6 +256,10 @@ export default{
     methods:{
         ...mapMutations(['setPage', 'getProductTypeData', 'getProductData', 'getProductsInCat', 'ScbNoAddOne','addSelectedP']),
         ...mapActions(['getProductData','getProductsInCat']),
+        getColorString(product)
+        {
+            return this.pSelectColor[product.PID] + ' white--text';
+        },
         removeProduct(index)
         {
             this.$store.state.selectedProducts.splice(index,1);
@@ -357,6 +362,7 @@ export default{
             if(this.showWarning)
                 return;
             //product.qty = 1;
+            this.$set(this.pSelectColor, product.PID, 'green lighten-1');
             var newP = {
                 ...product,
                 qty: 1
@@ -401,6 +407,10 @@ export default{
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);
+        this.pSelectColor.length = 0;
+        this.$store.state.allProducts.forEach(p => {
+            this.$set(this.pSelectColor, p.PID, 'indigo lighten-3');
+        })
         this.catSelected = this.getCatName(3);
         this.showWarning = !this.customer.city.area.SaleIsOn;
         axios.get(this.SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
