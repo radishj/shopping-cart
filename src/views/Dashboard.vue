@@ -402,7 +402,7 @@ export default{
     async mounted(){
         if(this.$store.state.customer.ID==null)
         {
-             router.push('/start') ;
+             router.push('/') ;
         }
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
@@ -422,10 +422,6 @@ export default{
                             {
                                 this.warning = "您本次团购的订单号是"+result.data.ID+",如需修改请微信或电话联系我们，7783502200，谢谢！";
                                 this.showWarning = true;
-                            }
-                            else
-                            {
-                                this.showWarning = false;
                             }
                         }
                     )

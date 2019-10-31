@@ -118,7 +118,7 @@ export default{
     mounted(){
         if(this.$store.state.customer.ID==null)
         {
-             router.push('/start') ;
+             router.push('/') ;
         }
     }
 }
