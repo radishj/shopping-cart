@@ -3,7 +3,7 @@
    <v-container fluid>
         <v-row justify="space-around">
         <v-col cols="10">
-            <v-img src="http://mediavictoria.com/image/system/Junzhituangou1.jpg" width="100%"></v-img>
+            <v-img src="http://mediavictoria.com:60/image/system/Junzhituangou1.jpg" width="100%"></v-img>
             <div class="subheading pt-8"><b>请输入您的联系电话号码:</b></div>
         </v-col>
         </v-row>
