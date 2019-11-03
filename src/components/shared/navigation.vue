@@ -8,7 +8,7 @@
 
       <v-toolbar-items>
         <v-btn text >
-          <p class="headline mt-3 mr-12">君知团购市场</p>
+          <p class="title mt-3">君知团购</p>
         </v-btn>
         <v-btn @click="setPage('basket')" text>
           <v-badge left color="green">
