@@ -53,7 +53,7 @@ export default{
         ...mapGetters(['customer','cities']),
     },
     methods:{
-        ...mapMutations(['setCustomer','setCustomerPhone']),
+        ...mapMutations(['reset', 'setCustomer', 'setCustomerPhone']),
         async goNext(){
             this.$store.state.newOrderID = -1;
             this.phone = this.phone.replace(/\D/g,'');
@@ -99,11 +99,7 @@ export default{
         }
     },
     async mounted(){
-        if(this.customer)
-        {
-            this.phone = this.customer.phone;
-            //city=this.customer.
-        }
+        this.reset();
         await this.$store.dispatch('setCityData');
     }
 }
