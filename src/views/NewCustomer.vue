@@ -123,6 +123,7 @@ export default{
             if(this.$refs.form.validate()){
                 await this.$store.dispatch('insertCustomer', {phone:this.lCustomer.Phone, address:this.lCustomer.Address,cityName:this.lCustomer.city.Name});
                 await this.$store.dispatch('getCustomerData', this.lCustomer.Phone);
+                this.$store.state.toNext=true;
                 router.push('Dashboard') ;
             }
         },

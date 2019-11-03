@@ -148,7 +148,7 @@
                             <span>${{parseFloat(product.UnitPrice * product.Unit * product.qty).toFixed(2)}}</span>
                         </v-badge></div>
                     </v-col>
-                    <v-col cols="1" class="text-center">
+                    <v-col cols="1" class="text-center"  v-if="!showWarning">
                         <v-btn icon ripple @click="removeProduct(index)">
                             <v-icon color="red lighten-1">delete</v-icon>
                         </v-btn>
@@ -262,7 +262,10 @@ export default{
         },
         removeProduct(index)
         {
+            this.$set(this.pSelectColor, this.$store.state.selectedProducts[index].PID, 'indigo lighten-3');
             this.$store.state.selectedProducts.splice(index,1);
+            this.$store.state.shoppingCartBadge--;
+            this.$store.commit('setCalc');
         },
         setShowImgDlg(p)
         {
@@ -276,16 +279,38 @@ export default{
         },
         async order()
         {
+            if(this.$store.state.newOrderID >= 0)
+            {
+                var orderID = {ID: this.$store.state.newOrderID};
+                axios.post(this.SERVER_URL+'/order/delete',orderID);
+                this.$store.state.newOrderID = -1;
+            }
             var discount = 0;
             if(this.$store.state.hasDiscount)
                 discount = 0.03;
+            var time = '';
+            if(this.$store.state.newOrderTime == "")
+            {
+                var date = new Date();
+                time = date.getUTCFullYear() + '-' +
+                    ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+                    ('00' + date.getUTCDate()).slice(-2) + ' ' + 
+                    ('00' + date.getUTCHours()).slice(-2) + ':' + 
+                    ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
+                    ('00' + date.getUTCSeconds()).slice(-2);
+            }
+            else
+            {
+                time = this.$store.state.newOrderTime;
+            }
             var newOrder = {
                 phone : this.customer.Phone,
                 saleID : this.saleID,
                 info : this.info,
                 isDelivery : this.$store.state.isDelivery,
                 discount : discount,
-                total : this.thetotal()
+                total : this.thetotal(),
+                time : time
             };
             await axios.post(this.SERVER_URL+'/order/new',newOrder).then(
                 result => {
@@ -400,10 +425,11 @@ export default{
      },
 
     async mounted(){
-        if(this.$store.state.customer.ID==null)
+        if(this.$store.state.customer.ID==null || !this.$store.state.toNext)
         {
              router.push('/') ;
         }
+        this.$store.state.toNext = false;
         //this.getProductTypeData();
         await this.$store.dispatch('getProductTypeData');
         await this.$store.dispatch('getProductData', 0);
@@ -411,36 +437,30 @@ export default{
         this.$store.state.allProducts.forEach(p => {
             this.$set(this.pSelectColor, p.PID, 'indigo lighten-3');
         })
-        this.catSelected = this.getCatName(3);
         this.showWarning = !this.customer.city.area.SaleIsOn;
-        axios.get(this.SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
-                async result => {
-                    this.saleID = result.data[0].Id;
-                    await axios.get(this.SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+this.saleID).then(
-                        result => {
-                            if(result.data)
-                            {
-                                this.warning = "您本次团购的订单号是"+result.data.ID+",如需修改请微信或电话联系我们，7783502200，谢谢！";
-                                this.showWarning = true;
-                            }
-                        }
-                    )
-                    axios.get(this.SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+result.data[1].Id).then(
-                        result => {
-                            if(result.data)
-                                this.$store.state.hasDiscount = true;
-                            else
-                                this.$store.state.hasDiscount = false;
-                        },
-                        error => {
-                            console.log('Error: discount, '+error);
-                        }
-                    )
-                },
-                error => {
-                    console.log('setCity:'+error);
-                }
-            )
+
+        if(this.$store.state.newOrderID >= 0)
+        {
+            this.$store.state.selectedProducts.length = 0;
+            var items = await axios.get(this.SERVER_URL+'/orderitem/'+this.$store.state.newOrderID);
+            var itemIDs = [];
+            items.data.forEach(item => {itemIDs.push(item.ProductId)});
+            var products = await axios.post(this.SERVER_URL+'/product/products/',{IDs:'['+itemIDs.toString()+']'});     
+            items.data.forEach(item => {
+                var p = products.data.find(p => {return p.PID==item.ProductId;});
+                var product = {...p};                   
+                product.UnitPrice = item.UnitPrice,
+                product.Unit = item.Unit,
+                product.qty = item.Quantity,
+                product.Info = item.Info,
+                product.WUnitType = item.WUnitType 
+                this.$store.state.selectedProducts.push(product);
+                this.$set(this.pSelectColor, product.PID, 'green lighten-1');
+            })
+            this.$store.state.shoppingCartBadge = items.data.length;
+            this.$store.commit('setCalc');
+        }
+        this.saleID = this.$store.state.sales[0].Id;
         this.$store.dispatch('getProductsInCat',3); 
     },
 }

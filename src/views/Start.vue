@@ -34,6 +34,7 @@
 </template>
 <script>
 //import Vue from 'vue'
+import axios from 'axios';
 import router from '../router';
 import {mapGetters, mapMutations} from 'vuex';
 export default{
@@ -54,20 +55,38 @@ export default{
     methods:{
         ...mapMutations(['setCustomer','setCustomerPhone']),
         async goNext(){
+            this.$store.state.newOrderID = -1;
             this.phone = this.phone.replace(/\D/g,'');
             this.setCustomerPhone(this.phone);
             if(this.$refs.form.validate()){
                 await this.$store.dispatch('getCustomerData', this.phone);
                 if(this.customer)
                 {
-                    localStorage.setItem('user',JSON.stringify(this.customer))
-
-                    if (localStorage.getItem('user') != null){
-                        router.push('OldCustomer') ;
-                    }
-                    else
+                    await axios.get(process.env.VUE_APP_DATA_SERVER_URL+'/sale/last2sales/'+(this.customer.city.area.ID*2+1).toString()).then(
+                        async result => {
+                            this.$store.state.sales = result.data;
+                            this.saleID = result.data[0].Id;
+                            await axios.get(process.env.VUE_APP_DATA_SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+this.saleID).then(
+                                result => {
+                                    if(result.data)
+                                    {
+                                        this.$store.state.newOrderID = result.data.ID;
+                                        this.$store.state.newOrderTime = result.data.UpdateTime;
+                                        this.$store.state.isDelivery = result.data.IsDelivery;
+                                        if(result.data.DiscountPercentage > 0.001)
+                                            this.$store.state.hasDiscount = true;
+                                        this.$store.state.toNext = true;
+                                    }
+                                }
+                            )
+                        }
+                    )
+                    if(this.$store.state.newOrderID >= 0)
                     {
-                        alert('LocalStorage is not supported! Cannot continue.');
+                       router.push('Dashboard') ;
+                    }
+                    else{
+                       router.push('OldCustomer') ;
                     }
                 }
                 else

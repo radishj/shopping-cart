@@ -43,10 +43,13 @@ export const store = new Vuex.Store({
         products: [],
         unitTypes: [],
         cities: [],
+        sales: [], //recent 2 sales, recent the first
         shoppingCartBadge:0,
         customer:{},
-        newOrderID: -1,
-        SERVER_URL: process.env.VUE_APP_DATA_SERVER_URL  //'http://localhost:3000' //
+        newOrderID: -1,  //the order ID
+        newOrderTime: '',
+        SERVER_URL: process.env.VUE_APP_DATA_SERVER_URL,  //'http://localhost:3000' //
+        toNext:false
     },
     getters:{
         page: state => {

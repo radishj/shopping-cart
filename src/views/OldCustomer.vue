@@ -127,10 +127,12 @@ export default{
             if(this.$refs.form.validate()){
                 if(this.BtnGoNextText == '信息正确，去选商品')
                 {
-                    router.push('Dashboard') ;
+                   this.$store.state.toNext=true;
+                   router.push('Dashboard') ;
                 }
                 else if(this.BtnGoNextText == '提交我的信息; 去选商品')
                 {
+                   this.$store.state.toNext=true;
                     await this.$store.dispatch('setCustomerAddress', {phone:this.customer.Phone, address:this.TFAddress.address});
                     router.push('Dashboard') ;
                 }

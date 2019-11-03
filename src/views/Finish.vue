@@ -103,12 +103,12 @@ export default{
         },
         OrderInfo1()
         {
-            var theTotal = (parseFloat(this.$store.state.total) + parseFloat(this.$store.state.tax) - (this.$store.state.hasDiscount|0)*parseFloat(this.$store.state.discount)).toFixed(2);
+            var theTotal = parseFloat(this.$store.state.total) + parseFloat(this.$store.state.tax) - (this.$store.state.hasDiscount|0)*parseFloat(this.$store.state.discount);
             if(this.$store.state.deliveryChargeInfo!='')
             {
                 theTotal += 5;
             }
-            return '订单总价：$' + theTotal;
+            return '订单总价：$' + (theTotal+0.005).toFixed(2);
         },
         OrderInfo2()
         {
