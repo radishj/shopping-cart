@@ -88,6 +88,28 @@ export const store = new Vuex.Store({
         },*/
     },
     mutations:{
+        reset(state)
+        {
+            state.deliveryChargeInfo = '',
+            state.total = 0,
+            state.tax = 0,
+            state.hasDiscount = false,
+            state.discount = 0,
+            state.page = 'productPick',
+            state.categories.length = 0,
+            state.selectedProducts.length = 0,
+            state.allProducts.length = 0,
+            state.products.length = 0,
+            state.unitTypes.length = 0,
+            state.cities.length = 0,
+            state.sales.length = 0, //recent 2 sales, recent the first
+            state.shoppingCartBadge = 0,
+            state.customer = {},
+            state.newOrderID = -1,  //the order ID
+            state.newOrderTime = '',
+            state.SERVER_URL = process.env.VUE_APP_DATA_SERVER_URL,  //'http://localhost:3000' //
+            state.toNext = false
+        },
         setCity(state, data){
             state.cities = data;
         },

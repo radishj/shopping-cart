@@ -1,14 +1,6 @@
 <template>
     <div>
     <div class="dashboard"  v-if="$store.state.page==='productPick'">
-    <v-list-item>
-        <v-btn @click="drawer = !drawer;"  color="indigo lighten-2 white--text" fab>
-            <v-icon>mdi-sitemap</v-icon>
-        </v-btn>
-        <v-list-item-content>
-            <v-list-item-title><span class="display-1"></span><span class="ml-3 display-1">: {{catSelected}}</span></v-list-item-title>
-        </v-list-item-content>
-    </v-list-item>
     <v-navigation-drawer v-model="drawer" fixed temporary class="mx-auto">
       <v-card
         class="mx-auto"

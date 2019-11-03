@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-app-bar flat app dark>
-      <v-app-bar-nav-icon ></v-app-bar-nav-icon>
-      <v-toolbar-title>君知团购市场</v-toolbar-title>
+      <v-app-bar-nav-icon @click="drawer = !drawer;"></v-app-bar-nav-icon>
+      <v-toolbar-title  style="padding-left: 5px;">: {{catSelected}}</v-toolbar-title>
 
        <v-spacer></v-spacer>
 
       <v-toolbar-items>
-        <v-btn text>
-          Products
+        <v-btn text >
+          <p class="headline mt-3 mr-12">君知团购市场</p>
         </v-btn>
         <v-btn @click="setPage('basket')" text>
           <v-badge left color="green">
@@ -18,6 +18,39 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
+        <v-navigation-drawer v-model="drawer" fixed temporary class="mx-auto">
+      <v-card
+        class="mx-auto"
+        max-width="300"
+        tile
+      >
+        <v-alert
+          icon="mdi-animation-play-outline"
+          text
+          color="blue darken-4"
+          elevation="2"
+          style="margin-bottom:2px"
+        >
+          <b>选择分类:</b>
+        </v-alert>
+        <v-list shaped>
+          <v-list-item-group color="primary">
+            <v-list-item
+              v-for="cat in cats"
+              :key="cat.ID"
+              @click="updateSelected(cat);"
+            >
+              <v-list-item-icon>
+                <v-icon color="blue">mdi-circle-outline</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="cat.Name"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-card>
+    </v-navigation-drawer>
 </div>
 </template>
 
@@ -25,6 +58,8 @@
   import {mapGetters, mapMutations} from 'vuex';
   export default {
     data: () => ({
+    drawer: false,
+    catSelected: "蔬菜",
     selectedItem: {},
     items:[
       {
@@ -42,16 +77,17 @@
       * update state to maintain selected item
       * and toggle view
       */
+      ...mapMutations(['getCats', 'setPage']),
+
      show(info)
      {
        alert(info);
      },
-      updateSelected (item) {
-          this.selectedItem = item;
-          alert(item.title);
-          this.drawer = !this.drawer;
-      },
-      ...mapMutations(['getCats', 'setPage'])
+      updateSelected (cat) {
+           this.catSelected = cat.Name;
+           this.$store.dispatch('getProductsInCat',cat.ID);
+           this.drawer = false;
+      }
     },
  
 
