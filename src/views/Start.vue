@@ -73,7 +73,7 @@ export default{
                                     {
                                         this.$store.state.newOrderID = result.data.ID;
                                         var time = new Date(result.data.UpdateTime);
-                                        time.setHours(time.getHours() - 8); //Not sure why it got 8 hours extra.
+                                        time.setHours(time.getHours() - 7); //Not sure why it got 7 hours extra.
                                         this.$store.state.newOrderTime = time.toUTCString();
                                         this.$store.state.isDelivery = result.data.IsDelivery;
                                         if(result.data.DiscountPercentage > 0.001)
