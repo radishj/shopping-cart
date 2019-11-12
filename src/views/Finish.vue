@@ -102,13 +102,23 @@ export default{
             }
         },
         OrderInfo1()
-        {
+        { 
+            var info = '订单总价：$';
             var theTotal = parseFloat(this.$store.state.total) + parseFloat(this.$store.state.tax) - (this.$store.state.hasDiscount|0)*parseFloat(this.$store.state.discount);
-            if(this.$store.state.deliveryChargeInfo!='')
+            if(this.$store.state.isDelivery)
             {
-                theTotal += 5;
+                if(this.$store.state.customer.city.area.ID==0 && theTotal<60)
+                {
+                    theTotal += 5;
+                    info = '订单总价+$5送货费：$';
+                }
+                else if(this.$store.state.customer.city.area.ID==1 && theTotal<90)
+                {   
+                    theTotal += 5;
+                    info = '订单总价+$5送货费：$';
+                }                    
             }
-            return '订单总价：$' + (theTotal+0.005).toFixed(2);
+            return info + (theTotal+0.005).toFixed(2);
         },
         OrderInfo2()
         {

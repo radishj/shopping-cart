@@ -118,7 +118,7 @@ export const store = new Vuex.Store({
             state.tax = getSProductsTaxTotal();
             state.discount = getDiscountTotal();
             var theTotal = (parseFloat(state.total) + parseFloat(state.tax) - (state.hasDiscount|0)*parseFloat(state.discount)).toFixed(2);
-            if(state.customer.city.Name == 'Victoria')
+            if(state.customer.city.area.ID == 0)
             {
                 if(theTotal<60)
                 {
