@@ -66,16 +66,30 @@ export default{
                         async result => {
                             this.$store.state.sales = result.data;
                             this.saleID = result.data[0].Id;
+                            var lastSaleID = result.data[1].Id;
                             await axios.get(process.env.VUE_APP_DATA_SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+this.saleID).then(
                                 result => {
                                     if(result.data)
                                     {
                                         this.$store.state.newOrderID = result.data.ID;
-                                        this.$store.state.newOrderTime = result.data.UpdateTime;
+                                        var time = new Date(result.data.UpdateTime);
+                                        time.setHours(time.getHours() - 8); //Not sure why it got 8 hours extra.
+                                        this.$store.state.newOrderTime = time.toUTCString();
                                         this.$store.state.isDelivery = result.data.IsDelivery;
                                         if(result.data.DiscountPercentage > 0.001)
                                             this.$store.state.hasDiscount = true;
                                         this.$store.state.toNext = true;
+                                    }
+                                    else
+                                    {
+                                        axios.get(process.env.VUE_APP_DATA_SERVER_URL+'/order/ps/'+this.customer.Phone+'/'+lastSaleID).then(
+                                            result => {
+                                                if(result.data)//aa
+                                                {
+                                                    this.$store.state.hasDiscount = true;
+                                                }
+                                            }
+                                        )
                                     }
                                 }
                             )

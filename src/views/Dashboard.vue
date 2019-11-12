@@ -284,12 +284,7 @@ export default{
             if(this.$store.state.newOrderTime == "")
             {
                 var date = new Date();
-                time = date.getUTCFullYear() + '-' +
-                    ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-                    ('00' + date.getUTCDate()).slice(-2) + ' ' + 
-                    ('00' + date.getUTCHours()).slice(-2) + ':' + 
-                    ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
-                    ('00' + date.getUTCSeconds()).slice(-2);
+                time = date.toUTCString();
             }
             else
             {
