@@ -448,7 +448,7 @@ export default{
             this.$store.commit('setCalc');
         }
         this.saleID = this.$store.state.sales[0].Id;
-        this.$store.dispatch('getProductsInCat',3); 
+        this.$store.dispatch('getProductsInCat',99); 
     },
 }
 </script>
