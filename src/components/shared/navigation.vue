@@ -59,7 +59,7 @@
   export default {
     data: () => ({
     drawer: false,
-    catSelected: "蔬菜",
+    catSelected: "半价特价商品",
     selectedItem: {},
     items:[
       {
