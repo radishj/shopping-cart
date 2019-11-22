@@ -316,14 +316,11 @@ export default{
                         };
                         await axios.post(this.SERVER_URL+'/orderitem/new',newItem).then(
                             async (result) => {
-                                if(result.productID == p.PID)
-                                {
-                                    var pStock = {
-                                        PID : p.PID,
+                                var pStock = {
+                                        PID : result.data.ProductId,
                                         consumedQty : p.Unit * p.qty
                                     }
-                                    await axios.post(this.SERVER_URL+'/product/stockqty',pStock);
-                                }
+                                await axios.post(this.SERVER_URL+'/product/stockqty',pStock);
                             }
                         );
                     })
